@@ -47,8 +47,8 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	if len(parsedPath) != 5 {
 		w.WriteHeader(http.StatusNotFound)
 	}
-	var stor storageUpdater
-	stor = storage
+	var stor storageUpdater = storage
+
 	if metricType == "counter" {
 		value, err := strconv.ParseInt(metricValue, 10, 64)
 		if err == nil {
