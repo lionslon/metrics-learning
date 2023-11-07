@@ -41,12 +41,15 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	parsedPath := strings.Split(r.URL.Path, "/")
+	if len(parsedPath) != 5 {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	fmt.Println(r.URL.Path)
 	metricType := parsedPath[2]
 	metricName := parsedPath[3]
 	metricValue := parsedPath[4]
-	if len(parsedPath) != 5 {
-		w.WriteHeader(http.StatusNotFound)
-	}
+
 	var stor storageUpdater = storage
 
 	if metricType == "counter" {
@@ -58,6 +61,7 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf("Ошибка преобразования к int64 значения: %s", metricValue)))
+			return
 		}
 	} else if metricType == "gauge" {
 		value, err := strconv.ParseFloat(metricValue, 64)
@@ -68,12 +72,16 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf("Ошибка преобразования к float64 значения: %s", metricValue)))
+			return
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("Нет такого типа метрики: %s", metricType)))
+		return
 	}
-	fmt.Println(r.URL.Path)
+
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+
 	fmt.Println(storage)
 }
 
