@@ -75,6 +75,5 @@ func (s *Server) mainPage() http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		//fmt.Println(fmt.Printf("%v", s.store))
 	}
 }
