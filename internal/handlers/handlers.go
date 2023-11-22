@@ -34,7 +34,6 @@ func (h *handler) PostMetric(c *fiber.Ctx) error {
 		}
 		h.store.UpdateCounter(c.Params("nameMetric"), value)
 		c.Set("Content-Type", "text/plain; charset=utf-8")
-		return c.Status(http.StatusOK).SendString("")
 	case "gauge":
 		value, err := strconv.ParseFloat(c.Params("valueMetric"), 64)
 		if err != nil {
@@ -42,7 +41,6 @@ func (h *handler) PostMetric(c *fiber.Ctx) error {
 		}
 		h.store.UpdateGauge(c.Params("nameMetric"), value)
 		c.Set("Content-Type", "text/plain; charset=utf-8")
-		return c.Status(http.StatusOK).SendString("")
 	default:
 		return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное тип метрики: %s", c.Params("typeMetric")))
 	}
