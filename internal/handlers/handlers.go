@@ -25,30 +25,35 @@ func New(stor *storage.MemStorage) *handler {
 	}
 }
 
-func (h *handler) PostCounter(c *fiber.Ctx) error {
-	value, err := strconv.ParseInt(c.Params("valueMetric"), 10, 64)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное значение метрики: %s", c.Params("valueMetric")))
+func (h *handler) PostMetric(c *fiber.Ctx) error {
+	switch c.Params("typeMetric") {
+	case "counter":
+		value, err := strconv.ParseInt(c.Params("valueMetric"), 10, 64)
+		if err != nil {
+			return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное значение метрики: %s", c.Params("valueMetric")))
+		}
+		h.store.UpdateCounter(c.Params("nameMetric"), value)
+		c.Set("Content-Type", "text/plain; charset=utf-8")
+		return c.Status(http.StatusOK).SendString("")
+	case "gauge":
+		value, err := strconv.ParseFloat(c.Params("valueMetric"), 64)
+		if err != nil {
+			return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное значение метрики: %s", c.Params("valueMetric")))
+		}
+		h.store.UpdateGauge(c.Params("nameMetric"), value)
+		c.Set("Content-Type", "text/plain; charset=utf-8")
+		return c.Status(http.StatusOK).SendString("")
+	default:
+		return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное тип метрики: %s", c.Params("typeMetric")))
 	}
-	h.store.UpdateCounter(c.Params("nameMetric"), value)
-	c.Set("Content-Type", "text/plain; charset=utf-8")
-	return c.Status(http.StatusOK).SendString("")
-}
-
-func (h *handler) PostGauge(c *fiber.Ctx) error {
-	value, err := strconv.ParseFloat(c.Params("valueMetric"), 64)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).SendString(fmt.Sprintf("Невалидное значение метрики: %s", c.Params("valueMetric")))
-	}
-	h.store.UpdateGauge(c.Params("nameMetric"), value)
 	c.Set("Content-Type", "text/plain; charset=utf-8")
 	return c.Status(http.StatusOK).SendString("")
 }
 
 func (h *handler) GetMetric(c *fiber.Ctx) error {
-	_, status := h.store.GetValue(c.Params("typeMetric"), c.Params("nameMetric"))
-	//return c.Status(status).SendString(val)
-	return c.Status(status).SendString("eee")
+	val, status := h.store.GetValue(c.Params("typeMetric"), c.Params("nameMetric"))
+	return c.Status(status).SendString(val)
+	//return c.Status(status).SendString("eee")
 }
 
 func (h *handler) GetAllMetrics(c *fiber.Ctx) error {

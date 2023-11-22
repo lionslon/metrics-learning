@@ -25,18 +25,16 @@ func (m MemStorage) UpdateCounter(name string, value int64) {
 }
 
 func (m MemStorage) UpdateGauge(name string, value float64) {
-	fmt.Println(fmt.Sprintf("before update: %v", m.gaugeData))
-	fmt.Println(fmt.Sprintf("try update key: %s, value = %f", name, value))
+	//fmt.Println(fmt.Sprintf("before update: %v", m.gaugeData))
+	//fmt.Println(fmt.Sprintf("try update key: %s, value = %f", name, value))
 
 	m.gaugeData[name] = gauge(value)
-	//for n, v := range m.gaugeData {
-	//	fmt.Println(fmt.Sprintf("- %s = %f\n", n, v))
-	//}
-	fmt.Println(fmt.Sprintf("after update: %v", m.gaugeData))
+
+	//fmt.Println(fmt.Sprintf("after update: %v", m.gaugeData))
 }
 
 func (m MemStorage) GetValue(typeM string, name string) (string, int) {
-	fmt.Println(fmt.Sprintf("try get name: %s, type = %s", name, typeM))
+	//fmt.Println(fmt.Sprintf("try get name: %s, type = %s", name, typeM))
 	var v string
 	statusCode := http.StatusOK
 	switch typeM {
@@ -47,19 +45,14 @@ func (m MemStorage) GetValue(typeM string, name string) (string, int) {
 		}
 	case "gauge":
 		//fmt.Println("gaugeData")
-		fmt.Println(fmt.Sprintf("before getting gauge: %v", m.gaugeData))
-		//for n, v := range m.gaugeData {
-		//	fmt.Println(fmt.Sprintf("- %s = %f\n", n, v))
-		//}
+		//fmt.Println(fmt.Sprintf("before getting gauge: %v", m.gaugeData))
+
 		val, ok := m.gaugeData[name]
-		fmt.Println(fmt.Sprintf("name=%s value=%f", name, val))
+		//fmt.Println(fmt.Sprintf("name=%s value=%f", name, val))
 		if ok {
 			v = fmt.Sprint(val)
 		}
-		fmt.Println(fmt.Sprintf("after getting gauge: %v", m.gaugeData))
-		//for n, v := range m.counterData {
-		//	fmt.Println(fmt.Sprintf("- %s = %d\n", n, v))
-		//}
+		//fmt.Println(fmt.Sprintf("after getting gauge: %v", m.gaugeData))
 	default:
 		statusCode = http.StatusNotFound
 	}
